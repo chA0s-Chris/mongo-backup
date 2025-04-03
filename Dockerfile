@@ -1,4 +1,4 @@
-﻿FROM ubuntu:22.04 AS builder
+﻿FROM ubuntu:24.04 AS builder
 
 # install dependencies
 RUN apt-get update && \
@@ -10,7 +10,7 @@ RUN apt-get update && \
 # add MongoDB repository
 RUN curl -fsSL https://pgp.mongodb.com/server-8.0.asc | \
     gpg --dearmor -o /usr/share/keyrings/mongodb-server-8.0.gpg && \
-    echo "deb [ signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/8.0 multiverse" | \
+    echo "deb [ signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" | \
     tee /etc/apt/sources.list.d/mongodb-org-8.0.list
 
 # install MongoDB database tools
@@ -43,4 +43,4 @@ FROM scratch
 
 COPY --from=builder /chiseled /
 
-ENTRYPOINT ["/usr/bin/mongodump", "--version"]
+ENTRYPOINT ["/usr/bin/mongodump"]
