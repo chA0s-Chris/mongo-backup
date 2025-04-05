@@ -4,14 +4,33 @@ on:
   push:
     branches: [ "main" ]
     tags: [ "v*.*" ]
+  schedule:
+    - cron: "0 4 * * 1,4"
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine Latest Tag
+        if: github.event_name == 'schedule'
+        id: determine-ref
+        run: |
+          latest_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
+          echo "Latest tag: $latest_tag"
+          echo "ref=$latest_tag" >> $GITHUB_OUTPUT
+
+      - name: Checkout Latest Tag
+        if: github.event_name == 'schedule'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.determine-ref.outputs.ref }}
+          fetch-depth: 0
 
       - name: Docker Metadata
         id: meta
